@@ -20,6 +20,13 @@ type AuiV0MessageContentPart =
       readonly text: string;
     }
   | {
+      readonly type: "source";
+      readonly sourceType: "url";
+      readonly id: string;
+      readonly url: string;
+      readonly title?: string;
+    }
+  | {
       readonly type: "tool-call";
       readonly toolCallId: string;
       readonly toolName: string;
@@ -75,6 +82,9 @@ export const auiV0Encode = (message: ThreadMessage): AuiV0Message => {
           };
         }
 
+        case "source":
+          return part;
+
         case "tool-call": {
           if (!isJSONValue(part.result)) {
             console.warn(
@@ -98,7 +108,7 @@ export const auiV0Encode = (message: ThreadMessage): AuiV0Message => {
         }
 
         default: {
-          const unhandledType: "ui" | "image" | "file" | "audio" = type;
+          const unhandledType: "image" | "file" | "audio" = type;
           throw new Error(
             `Content part type not supported by aui/v0: ${unhandledType}`,
           );

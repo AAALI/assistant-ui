@@ -133,7 +133,7 @@ export function toLanguageModelMessages(
                 }
 
                 default: {
-                  const unhandledType: "ui" | "audio" = type;
+                  const unhandledType: "audio" = type;
                   throw new Error(
                     `Unspported content part type: ${unhandledType}`,
                   );
@@ -150,8 +150,9 @@ export function toLanguageModelMessages(
         for (const part of message.content) {
           const type = part.type;
           switch (type) {
-            case "reasoning": {
-              break; // reasoning parts are omitted
+            case "reasoning":
+            case "source": {
+              break; // reasoning and source parts are omitted
             }
 
             case "text": {
@@ -163,7 +164,7 @@ export function toLanguageModelMessages(
               break;
             }
             default: {
-              const unhandledType: "ui" = type;
+              const unhandledType: never = type;
               throw new Error(`Unhandled content part type: ${unhandledType}`);
             }
           }

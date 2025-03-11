@@ -3,7 +3,6 @@ import {
   MessageStatus,
   TextContentPart,
   ImageContentPart,
-  UIContentPart,
   ThreadMessage,
   ThreadAssistantContentPart,
   ThreadAssistantMessage,
@@ -14,7 +13,11 @@ import {
   FileContentPart,
   Unstable_AudioContentPart,
 } from "../../types";
-import { ReasoningContentPart, ThreadStep } from "../../types/AssistantTypes";
+import {
+  ReasoningContentPart,
+  SourceContentPart,
+  ThreadStep,
+} from "../../types/AssistantTypes";
 import {
   ReadonlyJSONObject,
   ReadonlyJSONValue,
@@ -28,6 +31,7 @@ export type ThreadMessageLike = {
     | readonly (
         | TextContentPart
         | ReasoningContentPart
+        | SourceContentPart
         | ImageContentPart
         | FileContentPart
         | Unstable_AudioContentPart
@@ -40,7 +44,6 @@ export type ThreadMessageLike = {
             readonly result?: any | undefined;
             readonly isError?: boolean | undefined;
           }
-        | UIContentPart
       )[];
   readonly id?: string | undefined;
   readonly createdAt?: Date | undefined;
@@ -97,7 +100,7 @@ export const fromThreadMessageLike = (
                 if (part.text.trim().length === 0) return null;
                 return part;
 
-              case "ui":
+              case "source":
                 return part;
 
               case "tool-call": {
@@ -143,14 +146,13 @@ export const fromThreadMessageLike = (
           const type = part.type;
           switch (type) {
             case "text":
-            case "ui":
             case "image":
             case "audio":
             case "file":
               return part;
 
             default: {
-              const unhandledType: "tool-call" | "reasoning" = type;
+              const unhandledType: "tool-call" | "reasoning" | "source" = type;
               throw new Error(
                 `Unsupported user content part type: ${unhandledType}`,
               );
